@@ -10,13 +10,42 @@ namespace QuickVR.SVR
     public class QuickSVRTrackersManager : MonoBehaviour
     {
 
+        /// <summary>
+        /// Relates a SteamVR_TrackedObject with the corresponding QuickVRNode
+        /// </summary>
+        protected struct QuickSVRTracker
+        {
+            public SteamVR_TrackedObject _device;
+            public QuickVRNode _vrNode;
+
+            public void Update()
+            {
+                if (_vrNode)
+                {
+                    _vrNode.SetTracked(true);
+                    _vrNode.transform.localPosition = _device.transform.localPosition;
+                    _vrNode.transform.localRotation = _device.transform.localRotation;
+                }
+            }
+        }
+
         #region PROTECTED ATTRIBUTES
 
-        protected Dictionary<SteamVR_TrackedObject.EIndex, SteamVR_TrackedObject> _connectedTrackers = new Dictionary<SteamVR_TrackedObject.EIndex, SteamVR_TrackedObject>();
+        protected Dictionary<SteamVR_TrackedObject.EIndex, QuickSVRTracker> _connectedTrackers = new Dictionary<SteamVR_TrackedObject.EIndex, QuickSVRTracker>();
 
         #endregion
 
         #region CREATION AND DESTRUCTION
+
+        protected virtual void OnEnable()
+        {
+            QuickVRManager.OnPostUpdateVRNodes += UpdateVRNodesTrackers;
+        }
+
+        protected virtual void OnDisable()
+        {
+            QuickVRManager.OnPostUpdateVRNodes -= UpdateVRNodesTrackers;
+        }
 
         protected virtual void TrackerConnected(SteamVR_TrackedObject.EIndex trackerIndex)
         {
@@ -24,7 +53,9 @@ namespace QuickVR.SVR
             SteamVR_TrackedObject tObject = t.GetOrCreateComponent<SteamVR_TrackedObject>();
             tObject.index = trackerIndex;
 
-            _connectedTrackers[trackerIndex] = tObject;
+            QuickSVRTracker tracker = new QuickSVRTracker();
+            tracker._device = tObject;
+            _connectedTrackers[trackerIndex] = tracker;
 
             //For debug purposes only
             Transform tDebug = t.CreateChild("__Debug__");
@@ -36,7 +67,13 @@ namespace QuickVR.SVR
 
         protected virtual void TrackerDisconnected(SteamVR_TrackedObject.EIndex trackerIndex)
         {
-            DestroyImmediate(_connectedTrackers[trackerIndex].gameObject);
+            QuickSVRTracker tracker = _connectedTrackers[trackerIndex];
+            DestroyImmediate(tracker._device.gameObject);
+            if (tracker._vrNode)
+            {
+                tracker._vrNode.SetTracked(false);
+            }
+
             _connectedTrackers.Remove(trackerIndex);
         }
 
@@ -84,6 +121,14 @@ namespace QuickVR.SVR
                 //{
                 //    Debug.Log(OpenVR.System.GetTrackedDeviceActivityLevel((uint)pair.Key));
                 //}
+            }
+        }
+
+        protected virtual void UpdateVRNodesTrackers()
+        {
+            foreach (var pair in _connectedTrackers)
+            {
+                pair.Value.Update();
             }
         }
 
