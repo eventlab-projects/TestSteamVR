@@ -14,9 +14,11 @@ namespace QuickVR
         {
             LeftTriggerPress,
             LeftGripPress,
+            LeftTrackpadPress, 
 
             RightTriggerPress,
             RightGripPress,
+            RightTrackpadPress,
         }
 
         #region CREATION AND DESTRUCTION
@@ -68,14 +70,21 @@ namespace QuickVR
         {
             bool result = false;
 
-            bool isLeft = button.StartsWith("L");
+            SteamVR_Input_Sources hand = button.StartsWith("L") ? SteamVR_Input_Sources.LeftHand : SteamVR_Input_Sources.RightHand;
             if (button.Contains("Trigger"))
             {
-                result = SteamVR_Actions._default.GrabPinch.GetStateDown(isLeft ? SteamVR_Input_Sources.LeftHand : SteamVR_Input_Sources.RightHand);
+                result = SteamVR_Actions._default.GrabPinch.GetStateDown(hand);
             }
             else if (button.Contains("Grip"))
             {
-                result = SteamVR_Actions._default.GrabGrip.GetStateDown(isLeft ? SteamVR_Input_Sources.LeftHand : SteamVR_Input_Sources.RightHand);
+                result = SteamVR_Actions._default.GrabGrip.GetStateDown(hand);
+            }
+            else if (button.Contains("Trackpad"))
+            {
+                result = 
+                    SteamVR_Actions._default.Teleport.GetStateDown(hand) || 
+                    SteamVR_Actions._default.SnapTurnLeft.GetStateDown(hand) || 
+                    SteamVR_Actions._default.SnapTurnRight.GetStateDown(hand);
             }
 
             return result;

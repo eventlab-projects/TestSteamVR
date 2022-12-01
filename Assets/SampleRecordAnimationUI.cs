@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 namespace QuickVR.Samples.RecordAnimation
 {
@@ -22,9 +23,12 @@ namespace QuickVR.Samples.RecordAnimation
         public float _guiDeadAngle = 45.0f;
 
         [Header("Animation UI")]
-        public Button _buttonRecordStop = null;
-        public Button _buttonPlayback = null;
-        public Button _buttonExportToFBX = null;
+        public QuickUIButton _buttonRecordStop = null;
+        public QuickUIButton _buttonPlayback = null;
+        public QuickUIButton _buttonExportToFBX = null;
+
+        //The QuickAnimationPlayer component of the Avatar we want to record/playback. 
+        public QuickAnimationPlayer _animationPlayerAvatar = null;
 
         #endregion
 
@@ -60,6 +64,33 @@ namespace QuickVR.Samples.RecordAnimation
         protected virtual void OnEnable()
         {
             _coUpdatePosition = StartCoroutine(CoUpdatePosition());
+
+            _buttonRecordStop.OnDown += ButtonRecordStop_Down;
+            _buttonPlayback.OnDown += ButtonPlayback_Down;
+        }
+
+        private void ButtonPlayback_Down()
+        {
+            _animationPlayerAvatar.Playback();
+            
+            gameObject.SetActive(false);
+        }
+
+        private void ButtonRecordStop_Down()
+        {
+            //throw new System.NotImplementedException();
+            if (_animationPlayerAvatar.IsRecording())
+            {
+                _animationPlayerAvatar.StopRecording();
+            }
+            else
+            {
+                _animationPlayerAvatar.Record();
+            }
+
+            UpdateStateButtonRecordStop();
+
+            gameObject.SetActive(false);
         }
 
         protected virtual void OnDisable()
@@ -75,8 +106,6 @@ namespace QuickVR.Samples.RecordAnimation
             _interactionManager = QuickSingletonManager.GetInstance<QuickVRInteractionManager>();
             _interactorLeftHand = _interactionManager.GetVRInteractorHandLeft();
             _interactorRightHand = _interactionManager.GetVRInteractorHandRight();
-
-            //_toggleUIRayRightHand.isOn = true;
         }
 
         #endregion
@@ -159,6 +188,11 @@ namespace QuickVR.Samples.RecordAnimation
             }
 
             _coUpdateTargetFwd = null;
+        }
+
+        protected virtual void UpdateStateButtonRecordStop()
+        {
+            _buttonRecordStop.GetComponentInChildren<TextMeshProUGUI>().text = (_animationPlayerAvatar.IsRecording())? "Stop Recording" : "Record";
         }
 
         #endregion

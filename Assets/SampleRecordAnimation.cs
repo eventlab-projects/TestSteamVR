@@ -43,7 +43,9 @@ namespace QuickVR.Samples.RecordAnimation
         void Start()
         {
             _vrPlayArea = QuickSingletonManager.GetInstance<QuickVRPlayArea>();
+            _interactionManager = QuickSingletonManager.GetInstance<QuickVRInteractionManager>();
             ShowTrackers();
+            ShowGUI(true);
         }
 
         protected virtual void ShowTrackers()
@@ -56,6 +58,12 @@ namespace QuickVR.Samples.RecordAnimation
             _prevShowTrackers = _showTrackers;
         }
 
+        protected virtual void ShowGUI(bool show)
+        {
+            _gui.gameObject.SetActive(show);
+            _interactionManager.GetVRInteractorHandRight().SetInteractorEnabled(InteractorType.UI, show);
+        }
+
         // Update is called once per frame
         void Update()
         {
@@ -66,8 +74,7 @@ namespace QuickVR.Samples.RecordAnimation
 
             if (InputManager.GetButtonDown("ShowGUI"))
             {
-                _gui.gameObject.SetActive(!_gui.gameObject.activeSelf);
-                _interactionManager.GetVRInteractorHandRight().SetInteractorEnabled(InteractorType.UI, _gui.gameObject.activeSelf);
+                ShowGUI(!_gui.gameObject.activeSelf);
             }
         }
     }
