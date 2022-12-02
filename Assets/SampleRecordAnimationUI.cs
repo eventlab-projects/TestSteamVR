@@ -44,7 +44,24 @@ namespace QuickVR.Samples.RecordAnimation
 
         protected Coroutine _coUpdatePosition = null;
 
-        protected Animator _animator = null;
+        protected Animator _animator
+        {
+            get
+            {
+                if (!m_Animator)
+                {
+                    m_Animator = QuickSingletonManager.GetInstance<QuickVRManager>().GetAnimatorSource();
+                }
+
+                return m_Animator;
+            }
+            set
+            {
+                m_Animator = value;
+            }
+        }
+
+        protected Animator m_Animator = null;
         protected Coroutine _coUpdateTargetFwd = null;
 
         #endregion
@@ -54,23 +71,41 @@ namespace QuickVR.Samples.RecordAnimation
         protected virtual void Awake()
         {
             QuickVRManager.OnTargetAnimatorSet += OnTargetAnimatorSetAction;
-        }
-
-        protected virtual void OnDestroy()
-        {
-            QuickVRManager.OnTargetAnimatorSet -= OnTargetAnimatorSetAction;
-        }
-
-        protected virtual void OnEnable()
-        {
-            _coUpdatePosition = StartCoroutine(CoUpdatePosition());
 
             _buttonRecordStop.OnDown += ButtonRecordStop_Down;
             _buttonPlayback.OnDown += ButtonPlayback_Down;
         }
 
+        protected virtual void OnDestroy()
+        {
+            QuickVRManager.OnTargetAnimatorSet -= OnTargetAnimatorSetAction;
+
+            if (_buttonRecordStop)
+            {
+                _buttonRecordStop.OnDown -= ButtonRecordStop_Down;
+            }
+            
+            if (_buttonPlayback)
+            {
+                _buttonPlayback.OnDown -= ButtonPlayback_Down;
+            }
+        }
+
+        protected virtual void OnEnable()
+        {
+            _coUpdatePosition = StartCoroutine(CoUpdatePosition());
+        }
+
+        protected virtual void OnDisable()
+        {
+            StopAllCoroutines();
+            _coUpdatePosition = null;
+            _coUpdateTargetFwd = null;
+        }
+
         private void ButtonPlayback_Down()
         {
+            Debug.Log("PLAYBACK!!!");
             _animationPlayerAvatar.Playback();
             
             gameObject.SetActive(false);
@@ -81,23 +116,18 @@ namespace QuickVR.Samples.RecordAnimation
             //throw new System.NotImplementedException();
             if (_animationPlayerAvatar.IsRecording())
             {
+                Debug.Log("STOP RECORDING!!!");
                 _animationPlayerAvatar.StopRecording();
             }
             else
             {
+                Debug.Log("RECORD!!!");
                 _animationPlayerAvatar.Record();
             }
 
             UpdateStateButtonRecordStop();
 
             gameObject.SetActive(false);
-        }
-
-        protected virtual void OnDisable()
-        {
-            StopAllCoroutines();
-            _coUpdatePosition = null;
-            _coUpdateTargetFwd = null;
         }
 
         protected virtual void Start()

@@ -45,7 +45,7 @@ namespace QuickVR.Samples.RecordAnimation
             _vrPlayArea = QuickSingletonManager.GetInstance<QuickVRPlayArea>();
             _interactionManager = QuickSingletonManager.GetInstance<QuickVRInteractionManager>();
             ShowTrackers();
-            ShowGUI(true);
+            //ShowGUI(true);
         }
 
         protected virtual void ShowTrackers()
