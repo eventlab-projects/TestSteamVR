@@ -11,7 +11,10 @@ public class TestInputManager : MonoBehaviour
 
     protected virtual void Update()
     {
-        
+        if (InputManager.GetButtonDown(InputManager.DEFAULT_BUTTON_CONTINUE))
+        {
+            Debug.Log("HOLA!!!");
+        }
     }
 
 }

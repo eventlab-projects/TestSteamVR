@@ -46,6 +46,17 @@ namespace QuickVR
             return result;
         }
 
+        protected override void ResetDefaultConfiguration()
+        {
+            //Configure the default axes
+            //ConfigureDefaultAxis(InputManager.DEFAULT_AXIS_HORIZONTAL, AxisCode.RightStick_Horizontal.ToString());
+            //ConfigureDefaultAxis(InputManager.DEFAULT_AXIS_VERTICAL, AxisCode.LeftStick_Vertical.ToString());
+
+            //Configure the default buttons
+            ConfigureDefaultButton(InputManager.DEFAULT_BUTTON_CONTINUE, ButtonCodes.RightTriggerPress.ToString());
+            ConfigureDefaultButton(InputManager.DEFAULT_BUTTON_CALIBRATE, ButtonCodes.LeftGripPress.ToString());
+        }
+
         #endregion
 
         #region GET AND SET
