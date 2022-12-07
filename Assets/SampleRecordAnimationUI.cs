@@ -26,6 +26,8 @@ namespace QuickVR.Samples.RecordAnimation
         public QuickUIButton _buttonRecordStop = null;
         public QuickUIButton _buttonPlayback = null;
         public QuickUIButton _buttonExportToFBX = null;
+        public QuickUIButton _buttonExportToJSON = null;
+        public QuickUIButton _buttonLoadFromJSON = null;
 
         //The QuickAnimationPlayer component of the Avatar we want to record/playback. 
         public QuickAnimationPlayer _animationPlayerAvatar = null;
@@ -74,6 +76,8 @@ namespace QuickVR.Samples.RecordAnimation
 
             _buttonRecordStop.OnDown += ButtonRecordStop_Down;
             _buttonPlayback.OnDown += ButtonPlayback_Down;
+            _buttonExportToJSON.OnDown += ButtonExportToJSON_Down;
+            _buttonLoadFromJSON.OnDown += ButtonLoadFromJSON_Down;
         }
 
         protected virtual void OnDestroy()
@@ -89,6 +93,11 @@ namespace QuickVR.Samples.RecordAnimation
             {
                 _buttonPlayback.OnDown -= ButtonPlayback_Down;
             }
+
+            if (_buttonExportToJSON)
+            {
+                _buttonExportToJSON.OnDown -= ButtonExportToJSON_Down;
+            }
         }
 
         protected virtual void OnEnable()
@@ -103,12 +112,12 @@ namespace QuickVR.Samples.RecordAnimation
             _coUpdateTargetFwd = null;
         }
 
-        private void ButtonPlayback_Down()
+        protected virtual void Start()
         {
-            Debug.Log("PLAYBACK!!!");
-            _animationPlayerAvatar.Playback();
-            
-            gameObject.SetActive(false);
+            _canvasGroup = gameObject.GetOrCreateComponent<CanvasGroup>();
+            _interactionManager = QuickSingletonManager.GetInstance<QuickVRInteractionManager>();
+            _interactorLeftHand = _interactionManager.GetVRInteractorHandLeft();
+            _interactorRightHand = _interactionManager.GetVRInteractorHandRight();
         }
 
         private void ButtonRecordStop_Down()
@@ -116,12 +125,10 @@ namespace QuickVR.Samples.RecordAnimation
             //throw new System.NotImplementedException();
             if (_animationPlayerAvatar.IsRecording())
             {
-                Debug.Log("STOP RECORDING!!!");
                 _animationPlayerAvatar.StopRecording();
             }
             else
             {
-                Debug.Log("RECORD!!!");
                 _animationPlayerAvatar.Record();
             }
 
@@ -130,12 +137,22 @@ namespace QuickVR.Samples.RecordAnimation
             gameObject.SetActive(false);
         }
 
-        protected virtual void Start()
+        private void ButtonPlayback_Down()
         {
-            _canvasGroup = gameObject.GetOrCreateComponent<CanvasGroup>();
-            _interactionManager = QuickSingletonManager.GetInstance<QuickVRInteractionManager>();
-            _interactorLeftHand = _interactionManager.GetVRInteractorHandLeft();
-            _interactorRightHand = _interactionManager.GetVRInteractorHandRight();
+            _animationPlayerAvatar.Playback();
+
+            gameObject.SetActive(false);
+        }
+
+        protected virtual void ButtonExportToJSON_Down()
+        {
+            QuickAnimationUtils.SaveToJson("test.json", _animationPlayerAvatar.GetRecordedAnimation());
+        }
+
+        protected virtual void ButtonLoadFromJSON_Down()
+        {
+            QuickAnimation animation = QuickAnimationUtils.LoadFromJson("test.json", _animationPlayerAvatar.GetComponent<Animator>());
+            _animationPlayerAvatar.Play(animation);
         }
 
         #endregion
