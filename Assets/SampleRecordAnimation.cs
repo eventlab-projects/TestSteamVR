@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using System.IO.Compression;
+
 namespace QuickVR.Samples.RecordAnimation
 {
 
@@ -76,6 +78,18 @@ namespace QuickVR.Samples.RecordAnimation
             {
                 ShowGUI(!_gui.gameObject.activeSelf);
             }
+        }
+
+        [ButtonMethod]
+        public virtual void TestZip()
+        {
+            QuickZipManager.CreateFromFile("test.json", "test.zip");
+        }
+
+        [ButtonMethod]
+        public virtual void TestZip2()
+        {
+            QuickZipManager.CreateFromDirectory("ATestFolder", "ATestFolder_2.zip");
         }
     }
 
