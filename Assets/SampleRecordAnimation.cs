@@ -83,13 +83,13 @@ namespace QuickVR.Samples.RecordAnimation
         [ButtonMethod]
         public virtual void TestZip()
         {
-            QuickZipManager.CreateFromFile("test.json", "test.zip");
+            QuickZipManager.CreateZip("test.json", "test.zip");
         }
 
         [ButtonMethod]
         public virtual void TestZip2()
         {
-            QuickZipManager.CreateFromDirectory("ATestFolder", "ATestFolder_2.zip");
+            QuickZipManager.CreateZip("ATestFolder", "ATestFolder_2.zip");
         }
     }
 
