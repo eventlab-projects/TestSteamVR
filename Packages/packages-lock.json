@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.eventlab.quicksteamvr": {
-      "version": "file:com.eventlab.dependencies.steamvr",
+      "version": "file:com.quickvr.quicksteamvr",
       "depth": 0,
       "source": "embedded",
       "dependencies": {}

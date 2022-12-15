@@ -4,3 +4,6 @@
 [submodule "Packages/com.quickvr.quickzip"]
 	path = Packages/com.quickvr.quickzip
 	url = https://github.com/eventlab-projects/com.quickvr.quickzip.git
+[submodule "Packages/com.quickvr.quicksteamvr"]
+	path = Packages/com.quickvr.quicksteamvr
+	url = https://github.com/eventlab-projects/com.quickvr.quicksteamvr.git
